@@ -1,0 +1,83 @@
+version: "3.8"
+
+services:
+  apiRestLumem:
+    container_name: project_apiRestLumem
+    build:
+      args:
+        user: apiRestLumem
+        uid: 1000
+      context: ./
+      dockerfile: Dockerfile
+    image: laravel-app
+    restart: unless-stopped
+    working_dir: /var/www/api
+    volumes:
+      - ./:/var/www/api
+    environment:
+      - WEB_DOCUMENT_ROOT=/var/www/api/public
+      - PHP_DISPLAY_ERRORS=0
+      - PHP_MEMORY_LIMIT=4096M
+      - PHP_MAX_EXECUTION_TIME=300
+      - PHP_POST_MAX_SIZE=500M
+      - PHP_UPLOAD_MAX_FILESIZE=500M
+      - PHP_DEBUGGER="xdebug"
+      - XDEBUG_MODE=debug
+      - XDEBUG_DISCOVER_CLIENT_HOST=Off
+      - XDEBUG_CLIENT_HOST=172.17.0.1
+      - XDEBUG_CLIENT_PORT=9090
+      - XDEBUG_PROFILER_ENABLE=Off
+      - COMPOSER_VERSION=2
+      - PHP_DATE_TIMEZONE=America/Fortaleza
+    networks:
+      - apiRestLumemservices
+
+  # nginx
+  nginx_apiRestLumem:
+    container_name: nginx_apiRestLumem
+    image: nginx:alpine
+    restart: unless-stopped
+    ports:
+      - 8015:80
+      - 450:443
+    volumes:
+      - ./:/var/www/api
+      - ./docker/nginx/:/etc/nginx/conf.d/
+    networks:
+      - apiRestLumemservices
+
+  # mysql micro 01
+  db_apiRestLumem:
+    container_name: database_apiRestLumem
+    image: mysql:5.7.22
+    restart: unless-stopped
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+    volumes:
+      - ./.docker/mysql/dbdata:/var/lib/mysql
+    ports:
+      - 3310:3306
+    networks:
+      - apiRestLumemservices
+
+  phpmyadmin_apiRestLumem:
+    container_name: phpmyadmin_apiRestLumem
+    depends_on:
+      - db_apiRestLumem
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8012:80'
+    environment:
+      PMA_HOST: db_apiRestLumem
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - apiRestLumemservices
+
+networks:
+  apiRestLumemservices:
+    driver: bridge
