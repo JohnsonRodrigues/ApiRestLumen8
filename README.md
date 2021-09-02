@@ -1,4 +1,5 @@
-# Lumen PHP Framework
+# ApiRestLumen8 - Lumen PHP Framework
+Projeto de ApiRestLumen8
 
 [![Build Status](https://travis-ci.org/laravel/lumen-framework.svg)](https://travis-ci.org/laravel/lumen-framework)
 [![Total Downloads](https://img.shields.io/packagist/dt/laravel/framework)](https://packagist.org/packages/laravel/lumen-framework)
@@ -22,3 +23,26 @@ If you discover a security vulnerability within Lumen, please send an e-mail to 
 ## License
 
 The Lumen framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---------------------------------------------------------------------------------------------------------------------------
+#Instalação
+
+
+- Configure a estrutura usando docker
+
+`docker-compose up -d`
+
+- Execute o comando abaixo para adquirir o .env
+
+`docker-compose exec apiRestLumem cp .env.example .env`
+
+- Execute o comando abaixo para instalar as dependencias do lumem
+
+`docker-compose exec apiRestLumem composer install`
+
+- Execute o comando a seguir para gerar as tabelas do banco de dados
+
+`docker-compose exec apiRestLumem php artisan migrate:fresh`
+
+- Pronto, agora é só acessar `http://localhost:8015` pra acessar a aplicação
+
+- Pronto, agora é só acessar phpMyAdmin`http://localhost:8012` pra acessar a aplicação
